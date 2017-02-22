@@ -12,7 +12,7 @@ public class ClickToScore : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         if (Input.GetMouseButtonDown(0)) {
-            ScoreManager.instance.Score++;
+            //ScoreManager.instance.Score++;
         }
 	}
 }

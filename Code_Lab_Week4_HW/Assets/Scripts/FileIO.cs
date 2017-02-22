@@ -5,14 +5,14 @@ using System.IO;
 
 public class FileIO : MonoBehaviour {
 
-    public string fileName = "testFile.txt";
+    private string fileName = "Score.txt";
 
 	// Use this for initialization
 	void Start () {
         string finalFilePath = Application.dataPath + "/" + fileName;
         StreamWriter sw = new StreamWriter(finalFilePath, true);
 
-        sw.WriteLine("this is a line");
+        sw.WriteLine("Gordon's Score is: " + ScoreManager.instance.Score);
 
         sw.Close();
 

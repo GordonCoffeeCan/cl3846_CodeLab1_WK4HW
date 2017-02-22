@@ -11,6 +11,9 @@ public class FirstPersonController : MonoBehaviour {
 	private Vector3 _moveDirection;
 	private float _gravity = 20;
 	private Transform _transfrom;
+    private AudioSource pistolShootAuido;
+
+    private Ray _ray;
 
 	private CharacterController _characterController;
 
@@ -20,13 +23,26 @@ public class FirstPersonController : MonoBehaviour {
 		_transfrom = this.transform;
 		_moveDirection = Vector3.zero;
 		_characterController = this.GetComponent<CharacterController> ();
-	}
+        pistolShootAuido = this.GetComponent<AudioSource>();
+    }
 	
 	// Update is called once per frame
 	void Update () {
         pistolAnim.SetBool("isFire", false);
         if (Input.GetMouseButtonDown(0)) {
             pistolAnim.SetBool("isFire", true);
+            pistolShootAuido.Play();
+
+            _ray = new Ray(_mainCamera.position, _mainCamera.forward);
+            RaycastHit _rayHit = new RaycastHit();
+
+            if (Physics.Raycast(_ray, out _rayHit)) {
+                if(_rayHit.collider.tag == "Target") {
+                    Destroy(_rayHit.collider.gameObject);
+                    TargetSpawner.isTargetSpawned = false;
+                    ScoreManager.instance.Score++;
+                }
+            }
         }
 	}
 
