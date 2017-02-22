@@ -7,7 +7,10 @@ public class FirstPersonController : MonoBehaviour {
     public Transform _weaponPivot;
     public Animator pistolAnim;
 
+    public static Vector3 playerPosition;
+
     private Transform _mainCamera;
+
 	private Vector3 _moveDirection;
 	private float _gravity = 20;
 	private Transform _transfrom;
@@ -33,6 +36,8 @@ public class FirstPersonController : MonoBehaviour {
             pistolAnim.SetBool("isFire", true);
             pistolShootAuido.Play();
 
+            
+
             _ray = new Ray(_mainCamera.position, _mainCamera.forward);
             RaycastHit _rayHit = new RaycastHit();
 
@@ -44,9 +49,13 @@ public class FirstPersonController : MonoBehaviour {
                 }
             }
         }
-	}
+
+        playerPosition = this.transform.position;
+
+    }
 
 	void FixedUpdate(){
+        Movement();
         FPSCamera();
         WeaponRotate();
         _moveDirection.y -= _gravity * Time.deltaTime;
@@ -59,7 +68,14 @@ public class FirstPersonController : MonoBehaviour {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        _mainCamera.localEulerAngles = new Vector3(_mainCamera.localEulerAngles.x, _mainCamera.localEulerAngles.y, 0);
+        //Set Limitation of Camera Rotation;
+        if(_mainCamera.localEulerAngles.x > 75 && _mainCamera.localEulerAngles.x < 180) {
+            _mainCamera.localEulerAngles = new Vector3(75, _mainCamera.localEulerAngles.y, 0);
+        }else if (_mainCamera.localEulerAngles.x > 180 && _mainCamera.localEulerAngles.x < 285) {
+            _mainCamera.localEulerAngles = new Vector3(285, _mainCamera.localEulerAngles.y, 0);
+        } else {
+            _mainCamera.localEulerAngles = new Vector3(_mainCamera.localEulerAngles.x, _mainCamera.localEulerAngles.y, 0);
+        }
     }
 
     private void WeaponRotate() {
@@ -67,6 +83,9 @@ public class FirstPersonController : MonoBehaviour {
         Quaternion _pivotTargetRotation = Quaternion.Euler(_mainCamera.eulerAngles.x, _mainCamera.eulerAngles.y, 0);
         _transfrom.rotation = Quaternion.Slerp(_transfrom.rotation, _controllerTargetRotation, rotationSpeed * Time.deltaTime);
         _weaponPivot.rotation = Quaternion.Slerp(_weaponPivot.rotation, _pivotTargetRotation, rotationSpeed * Time.deltaTime);
+    }
+
+    private void Movement() {
         if (_characterController.isGrounded) {
             _moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
             _moveDirection = _transfrom.TransformDirection(_moveDirection);
